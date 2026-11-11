@@ -11,6 +11,7 @@ import io
 import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import customtkinter as ctk
+import tkinter as tk
 from PIL import Image
 
 FROG_PNG_B64 = "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"
@@ -20,18 +21,68 @@ DISCORD_PNG_B64 = "UklGRl4QAABXRUJQVlA4TFIQAAAv/8F/EG+goG0bJvwRdzc0FLRtw4Q/4u5GQ
 config_dir = Path.home() / ".config" / "shadow_slime" / "itch"
 config = config_dir / "config.json"
 
-class LinuxSetup():
+class ToolTip:
+    """Small hover tooltip. tkinter has no built-in one."""
+
+    def __init__(self, widget, text, delay=500):
+        self.widget = widget
+        self.text = text
+        self.delay = delay
+        self.tip = None
+        self._job = None
+        # add="+" so this never replaces bindings the widget already has.
+        widget.bind("<Enter>", self._schedule, add="+")
+        widget.bind("<Leave>", self._hide, add="+")
+        widget.bind("<ButtonPress>", self._hide, add="+")
+
+    def _schedule(self, _event=None):
+        self._cancel()
+        self._job = self.widget.after(self.delay, self._show)
+
+    def _cancel(self):
+        if self._job is not None:
+            self.widget.after_cancel(self._job)
+            self._job = None
+
+    def _show(self):
+        if self.tip is not None:
+            return
+        x = self.widget.winfo_rootx() + 12
+        y = self.widget.winfo_rooty() + self.widget.winfo_height() + 6
+        self.tip = tk.Toplevel(self.widget)
+        # No title bar or border — it should look like a tooltip, not a window.
+        self.tip.wm_overrideredirect(True)
+        self.tip.wm_geometry(f"+{x}+{y}")
+        tk.Label(
+            self.tip,
+            text=self.text,
+            justify="left",
+            background="#ffffe0",
+            relief="solid",
+            borderwidth=1,
+            padx=6,
+            pady=3,
+        ).pack()
+
+    def _hide(self, _event=None):
+        self._cancel()
+        if self.tip is not None:
+            self.tip.destroy()
+            self.tip = None
+
+
+class LinuxSetup:
     def __init__(self, root):
-        super().__init__()
         self.root = root
         root.title("Main")
         root.geometry("520x380")
 
-        self.title = ctk.CTkLabel(root, text="Linux Setup", font=ctk.CTkFont(family="Helvetica", size=13, weight="bold"), width=150, height=40)
+        self.title = ctk.CTkLabel(root, text="Linux Setup", font=ctk.CTkFont(family="Helvetica", size=18, weight="bold"), width=180, height=50)
         self.title.place(x=180, y=10)
 
         self.ok_btn = ctk.CTkButton(root, text="OK", command=self.on_ok_btn, width=96, height=32)
-        self.ok_btn.place(x=380, y=310)
+        self.ok_btn.place(x=280, y=310)
+        ToolTip(self.ok_btn, "Click to setup")
 
         self.wine_path = ctk.CTkEntry(root, width=150, height=28)
         self.wine_path.place(x=270, y=190)
@@ -39,11 +90,17 @@ class LinuxSetup():
         self.username = ctk.CTkEntry(root, width=150, height=28)
         self.username.place(x=270, y=110)
 
-        self.username_label = ctk.CTkLabel(root, text="Linux Username", width=90, height=26)
-        self.username_label.place(x=155, y=110)
+        self.username_label = ctk.CTkLabel(root, text="Linux Username", font=ctk.CTkFont(family="Helvetica", size=11, weight="bold"), width=130, height=30)
+        self.username_label.place(x=130, y=108)
+        ToolTip(self.username_label, "Your linux username. example: isam")
 
-        self.winepath_label = ctk.CTkLabel(root, text="Prefix path", width=90, height=26)
-        self.winepath_label.place(x=155, y=190)
+        self.path_label = ctk.CTkLabel(root, text="Wine Prefix path", font=ctk.CTkFont(family="Helvetica", size=11, weight="bold"), width=140, height=30)
+        self.path_label.place(x=130, y=188)
+        ToolTip(self.path_label, "wine prefix path. example: /home/username/.wine")
+
+        self.cancel_btn = ctk.CTkButton(root, text="Cancel", command=self.on_cancel_btn, width=96, height=32)
+        self.cancel_btn.place(x=400, y=310)
+        ToolTip(self.cancel_btn, "cancel")
 
     def on_ok_btn(self):
         wine = self.wine_path.get()
@@ -53,6 +110,11 @@ class LinuxSetup():
             cfg_data = json.dump(config_data, f, indent=4)
         root.destroy()
         return cfg_data
+
+    def on_cancel_btn(self):
+        # if messagebox.askyesno("Quit?", "This will close setup"):
+        root.destroy()
+
 
 
 def embedded_image(b64):
@@ -68,7 +130,7 @@ os_name = platform.system()
 if os_name == "Linux":
     if not config.exists():
         config_dir.mkdir(parents=True, exist_ok=True)
-        config.touch()
+        # config.touch()
         ctk.set_appearance_mode("dark")
         root = ctk.CTk()
         app = LinuxSetup(root)
@@ -80,7 +142,7 @@ if os_name == "Linux":
     USERNAME = linux_data["user"]
     # WINE = f"/home/{USERNAME}/.wine/drive_c/users/{USERNAME}"
     PREFIX = linux_data["prefix"]
-    WINE = os.path.join(PREFIX, 'drive_c', USERNAME)
+    WINE = os.path.join(PREFIX, 'drive_c', 'users', USERNAME)
     LOCAL_LOW = os.path.join(WINE, 'AppData', 'LocalLow')
 else:
     LOCAL_LOW = os.path.join(os.environ['USERPROFILE'], 'AppData', 'LocalLow')
